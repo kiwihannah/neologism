@@ -1,5 +1,3 @@
-import datetime
-
 from flask import Flask, render_template, jsonify, request
 app = Flask(__name__)
 
@@ -40,19 +38,19 @@ def find_words():
         result = 'no results'
     return jsonify({'msg': result})
 
-#
-# for person in same_ages:
-#     print(person)
-#
-# user = db.users.find_one({'name':'bobby'}) # Select * user where name = 'bobby'
-# print(user)
-#
-# #3. update
-# db.users.update_one({'name':'bobby'},{'$set':{'age':19}})
-# db.users.update_many({'name':'Hannah'},{'$set':{'age':20}}) # update all
-#
-# #4. delete
-# db.users.delete_one({'name':'bobby'})
+#3. update
+@app.route('/update', methods=['POST'])
+def update_word():
+    word_receive = request.form['word_give']
+    definition_receive = request.form['definition_give']
+    time_receive = request.form['time_give']
+    db.neologism.update_one({'word':word_receive},{'$set':{'definition':definition_receive, 'upd_date':time_receive}})
+
+#4. delete
+@app.route('/delete', methods=['POST'])
+def delete_word():
+    word_receive = request.form['word_give']
+    db.neologism.delete_one({'word':word_receive})
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)
