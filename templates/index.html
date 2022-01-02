@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="utf-8">
+
+<head>
+    <!-- Webpage Title -->
+    <title>new neologism dic</title>
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous">
+
+    <!-- JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+
+    <!-- 구글폰트 -->
+    <link href="https://fonts.googleapis.com/css?family=Do+Hyeon&display=swap" rel="stylesheet">
+
+    <script type="text/javascript">
+
+        let result = '';
+
+        /*$(document).ready(function () {
+            showReview();
+        });*/
+
+        function findWord() {
+            // get post value
+            let keyword = $('#keyword').val()
+
+            // sending values
+            $.ajax({
+                type: "POST",
+                url: "/find",
+                data: {
+                    keyword_give: keyword
+                },
+                success: function (response) {
+                    alert(response["msg"]);
+                    result = response["msg"];
+                    $('#out-definition').attr("placeholder", result)
+                }
+            })
+        }
+
+        function newWords() {
+            // get post value
+            let new_word = $('#word').val()
+            let new_definition = $('#definition').val()
+            let nowTime = new Date().toLocaleDateString().split('T')[0];
+
+            // sending values
+            $.ajax({
+                type: "POST",
+                url: "/new",
+                data: {
+                    word_give: new_word,
+                    definition_give: new_definition,
+                    time_give: nowTime
+                },
+                success: function (response) {
+                    alert(response["msg"]);
+                    window.location.reload();
+                }
+            })
+        }
+
+        /*function popup(){
+            var url = "popup.html";
+            var name = "popup test";
+            var option = "width = 500, height = 500, top = 100, left = 200, location = no"
+            window.open(url, name, option);
+        }*/
+    </script>
+
+</head>
+
+<body>
+
+<!--    search for words    -->
+    <div class="container">
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text">input</span>
+            </div>
+            <input type="text" class="form-control" id="keyword">
+        </div>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text">result</span>
+            </div>
+            <textarea class="form-control" id="out-definition" cols="30" rows="5" ></textarea>
+        </div>
+        <div class="review">
+            <button onclick="findWord()" type="button" class="btn btn-primary">search</button>
+        </div>
+    </div>
+
+
+<!--    add new words    -->
+    <p><a href="add.html">add new words</a></p>
+    <div class="container">
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text">신조어 이름</span>
+            </div>
+            <input type="text" class="form-control" id="word">
+        </div>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text">신조어 뜻</span>
+            </div>
+            <textarea class="form-control" id="definition" cols="30" rows="5" ></textarea>
+        </div>
+        <div class="review">
+            <button onclick="newWords()" type="button" class="btn btn-primary">신조어 저장하기</button>
+        </div>
+    </div>
+
+</body>
+
+</html>
