@@ -24,13 +24,18 @@
 
         $(document).ready(function () {
             $('#no-result').hide();
+            $('#modify').hide();
+            $('#modi').hide();
+            $('#del').hide();
+            $('#re-search').hide();
         });
 
         function findWord() {
-            // get post value
+            $('#search').hide();
+            $('#re-search').show();
+
             let keyword = $('#keyword').val()
 
-            // sending values
             $.ajax({
                 type: "POST",
                 url: "/find",
@@ -38,39 +43,103 @@
                     keyword_give: keyword
                 },
                 success: function (response) {
-                    // alert(response["msg"]);
-                    $('#out-definition').attr("value", response["msg"])
+                    //alert(response["msg"]);
+                    $('#definition-found').append(`<p>${response["msg"]}</p>`)
+                    $('#modi').show();
+                    $('#del').show();
 
                     if (response["msg"] == 'no results') {
-                        if (window.confirm("Do you want to save this word?")) {
+                        $('#modi').hide();
+                        if (window.confirm("NO RESULT!\nDo you want to save this word?")) {
                             $('#no-result').show();
                             $('#result').hide();
+                            goNew(keyword);
                         }
                     }
                 }
             });
         }
 
-        function newWords() {
-            // get post value
-            let new_word = $('#word').val()
-            let new_definition = $('#definition').val()
+        function goNew() {
+            $('#result').hide();
+            $('#no-result').show();
+
+            let keyword = $('#keyword').val()
+            newWords(keyword)
+        }
+
+        function newWords(val) {
+            $('#new-word').attr('placeholder', '검색한 신조어 ->' + val)
+
+            let new_word = $('#new-word').val()
+            let new_desc = $('#new-desc').val()
             let nowTime = new Date().toLocaleDateString().split('T')[0];
 
-            // sending values
-            $.ajax({
-                type: "POST",
-                url: "/new",
-                data: {
-                    word_give: new_word,
-                    definition_give: new_definition,
-                    time_give: nowTime
-                },
-                success: function (response) {
-                    alert(response["msg"]);
-                    window.location.reload();
-                }
-            })
+            if (new_desc !='') {
+                $.ajax({
+                    type: "POST",
+                    url: "/new",
+                    data: {
+                        word_give: new_word,
+                        definition_give: new_desc,
+                        time_give: nowTime
+                    },
+                    success: function (response) {
+                        alert(response["msg"]);
+                        window.location.reload();
+                    }
+                });
+            }
+        }
+
+        function goModify() {
+            $('#result').hide();
+            $('#modify').show();
+
+            let keyword = $('#keyword').val()
+            modifyWord(keyword)
+        }
+
+        function modifyWord(val) {
+            $('#modi-word').attr('value', val);
+
+            let modi_word = $('#modi-word').val()
+            let modi_desc = $('#modi-desc').val()
+            let nowTime = new Date().toLocaleDateString().split('T')[0];
+            console.log(modi_word, modi_desc, nowTime)
+            if (modi_desc !='') {
+                $.ajax({
+                    type: "POST",
+                    url: "/modify",
+                    data: {
+                        modi_desc_give: modi_desc,
+                        modi_word_give: modi_word,
+                        upd_date_give: nowTime
+                    },
+                    success: function (response) {
+                        alert(response["msg"]);
+                        window.location.reload();
+                    }
+                });
+            }
+        }
+
+        function deleteWord() {
+            let keyword = $('#keyword').val()
+
+            if (window.confirm('Do you really want to delete it?')) {
+                $.ajax({
+                    type: "POST",
+                    url: "/delete",
+                    data: {
+                        delete_word_give: keyword
+                    },
+                    success: function (response) {
+                        alert(response["msg"]);
+                        window.location.reload();
+                    }
+                });
+            }
         }
 
     </script>
@@ -87,14 +156,16 @@
             </div>
             <input type="text" class="form-control" id="keyword">
         </div>
-        <div class="input-group mb-3">
-            <div class="input-group-prepend">
-                <span class="input-group-text">result</span>
-            </div>
-            <textarea class="form-control" id="out-definition" cols="30" rows="5"></textarea>
+        <div class="input-group mb-3" id="definition-found">
+            <!-- search result -->
         </div>
         <div class="review">
-            <button onclick="findWord()" type="button" class="btn btn-primary">search</button>
+            <button onclick="findWord()" type="button" class="btn btn-primary" id="search">search</button>
+            <button onclick="javascript:window.location.reload();" id="re-search"
+                    type="button" class="btn btn-primary">re-search</button>
+            <button onclick="goModify()"
+                    type="button"
+                    class="btn btn-primary" id="modi">modify</button>
         </div>
     </div>
 
@@ -102,19 +173,40 @@
     <div class="container" id="no-result">
         <div class="input-group mb-3">
             <div class="input-group-prepend">
-                <span class="input-group-text">신조어 이름</span>
+                <span class="input-group-text">new-word</span>
             </div>
-            <input type="text" class="form-control" id="word">
+            <input type="text" class="form-control" id="new-word">
         </div>
         <div class="input-group mb-3">
             <div class="input-group-prepend">
-                <span class="input-group-text">신조어 뜻</span>
+                <span class="input-group-text">new-desc</span>
             </div>
-            <textarea class="form-control" id="definition" cols="30" rows="5"></textarea>
+            <textarea class="form-control" id="new-desc" cols="30" rows="5"></textarea>
         </div>
         <div class="review">
-            <button onclick="newWords()" type="button" class="btn btn-primary">신조어 저장하기</button>
-            <button onclick="javascript:window.location.reload();" type="button" class="btn btn-primary">다시 검색</button>
+            <button onclick="newWords()" type="button" class="btn btn-primary">save</button>
+            <button onclick="javascript:window.location.reload();" type="button" class="btn btn-primary">re-search</button>
+        </div>
+    </div>
+
+    <!--    modify words    -->
+    <div class="container" id="modify">
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text">word</span>
+            </div>
+            <input type="text" class="form-control" id="modi-word" readonly>
+        </div>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text">desc</span>
+            </div>
+            <textarea class="form-control" id="modi-desc" cols="30" rows="5"></textarea>
+        </div>
+        <div class="review">
+            <button onclick="modifyWord()" type="button" class="btn btn-primary">modify</button>
+            <button onclick="deleteWord()" type="button" class="btn btn-primary" id="del">delete</button>
+            <button onclick="javascript:window.location.reload();" type="button" class="btn btn-primary">re-search</button>
         </div>
     </div>
 

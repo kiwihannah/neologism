@@ -39,18 +39,24 @@ def find_words():
     return jsonify({'msg': result})
 
 #3. update
-@app.route('/update', methods=['POST'])
+@app.route('/modify', methods=['POST'])
 def update_word():
-    word_receive = request.form['word_give']
-    definition_receive = request.form['definition_give']
-    time_receive = request.form['time_give']
-    db.neologism.update_one({'word':word_receive},{'$set':{'definition':definition_receive, 'upd_date':time_receive}})
+    word_receive = request.form['modi_word_give']
+    definition_receive = request.form['modi_desc_give']
+    time_receive = request.form['upd_date_give']
+
+    db.neologism.update_one({'word':word_receive},{'$set':{'definition':definition_receive}})
+    db.neologism.update_one({'word': word_receive}, {'$set': {'upd_date': time_receive}})
+
+    return jsonify({'msg': 'updated'})
 
 #4. delete
 @app.route('/delete', methods=['POST'])
 def delete_word():
-    word_receive = request.form['word_give']
+    word_receive = request.form['delete_word_give']
     db.neologism.delete_one({'word':word_receive})
+
+    return jsonify({'msg': 'deleted'})
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)

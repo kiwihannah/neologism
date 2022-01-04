@@ -23,8 +23,10 @@ for tr in trs:
     a_tags = tr.select('li')
     for a_tag in a_tags:
         if a_tag is not None:
-            word = a_tag.text.split(':')[0]
-            definition = a_tag.text.split(':')[1]
+            a_list = a_tag.text.split(':')
+
+            word = a_list[0]
+            definition = a_list[1].split('[')[0]
             print(f'word: {word}, definition: {definition}')
 
             doc = {
