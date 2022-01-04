@@ -22,11 +22,9 @@
 
     <script type="text/javascript">
 
-        let result = '';
-
-        /*$(document).ready(function () {
-            showReview();
-        });*/
+        $(document).ready(function () {
+            $('#no-result').hide();
+        });
 
         function findWord() {
             // get post value
@@ -41,10 +39,18 @@
                 },
                 success: function (response) {
                     alert(response["msg"]);
-                    result = response["msg"];
-                    $('#out-definition').attr("placeholder", result)
+                    $('#out-definition').attr("placeholder", response["msg"])
+
+                    if (response["msg"] == 'no results') {
+                        if (window.confirm("Do you want to save this word?")) {
+                            $('#no-result').show();
+                            $('#result').hide();
+
+                            window.reload();
+                        }
+                    }
                 }
-            })
+            });
         }
 
         function newWords() {
@@ -69,20 +75,14 @@
             })
         }
 
-        /*function popup(){
-            var url = "popup.html";
-            var name = "popup test";
-            var option = "width = 500, height = 500, top = 100, left = 200, location = no"
-            window.open(url, name, option);
-        }*/
     </script>
 
 </head>
 
 <body>
 
-<!--    search for words    -->
-    <div class="container">
+    <!--    search for words    -->
+    <div class="container" id="result">
         <div class="input-group mb-3">
             <div class="input-group-prepend">
                 <span class="input-group-text">input</span>
@@ -93,17 +93,15 @@
             <div class="input-group-prepend">
                 <span class="input-group-text">result</span>
             </div>
-            <textarea class="form-control" id="out-definition" cols="30" rows="5" ></textarea>
+            <textarea class="form-control" id="out-definition" cols="30" rows="5"></textarea>
         </div>
         <div class="review">
             <button onclick="findWord()" type="button" class="btn btn-primary">search</button>
         </div>
     </div>
 
-
-<!--    add new words    -->
-    <p><a href="add.html">add new words</a></p>
-    <div class="container">
+    <!--    add new words    -->
+    <div class="container" id="no-result">
         <div class="input-group mb-3">
             <div class="input-group-prepend">
                 <span class="input-group-text">신조어 이름</span>
@@ -114,7 +112,7 @@
             <div class="input-group-prepend">
                 <span class="input-group-text">신조어 뜻</span>
             </div>
-            <textarea class="form-control" id="definition" cols="30" rows="5" ></textarea>
+            <textarea class="form-control" id="definition" cols="30" rows="5"></textarea>
         </div>
         <div class="review">
             <button onclick="newWords()" type="button" class="btn btn-primary">신조어 저장하기</button>
