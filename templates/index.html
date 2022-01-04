@@ -38,15 +38,13 @@
                     keyword_give: keyword
                 },
                 success: function (response) {
-                    alert(response["msg"]);
-                    $('#out-definition').attr("placeholder", response["msg"])
+                    // alert(response["msg"]);
+                    $('#out-definition').attr("value", response["msg"])
 
                     if (response["msg"] == 'no results') {
                         if (window.confirm("Do you want to save this word?")) {
                             $('#no-result').show();
                             $('#result').hide();
-
-                            window.reload();
                         }
                     }
                 }
@@ -116,6 +114,7 @@
         </div>
         <div class="review">
             <button onclick="newWords()" type="button" class="btn btn-primary">신조어 저장하기</button>
+            <button onclick="javascript:window.location.reload();" type="button" class="btn btn-primary">다시 검색</button>
         </div>
     </div>
 
